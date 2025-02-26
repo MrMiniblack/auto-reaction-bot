@@ -3,7 +3,7 @@ const { addBot, removeBot, getBots, setReactions } = require('./db');
 const { startBot } = require('./bot');
 const router = express.Router();
 
-// Bot Register
+// Register a new bot
 router.post('/register-bot', (req, res) => {
   const { bot_token } = req.body;
   addBot(bot_token);
@@ -11,19 +11,19 @@ router.post('/register-bot', (req, res) => {
   res.json({ message: 'Bot registered and started!' });
 });
 
-// List Bots
+// List all registered bots
 router.get('/bots', (req, res) => {
   res.json(getBots());
 });
 
-// Remove Bot
+// Remove a bot
 router.delete('/remove-bot/:botToken', (req, res) => {
   const { botToken } = req.params;
   removeBot(botToken);
   res.json({ message: 'Bot removed!' });
 });
 
-// Set Reactions
+// Set reactions for a bot
 router.post('/set-reactions', (req, res) => {
   const { bot_token, reactions } = req.body;
   setReactions(bot_token, reactions);
