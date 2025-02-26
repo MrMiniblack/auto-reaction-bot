@@ -1,14 +1,13 @@
 const { Telegraf } = require('telegraf');
-const pool = require('./db');
+const { getBots, getReactions } = require('./db');
 
 async function startBot(botToken) {
   const bot = new Telegraf(botToken);
 
   bot.on('message', async (ctx) => {
     try {
-      const res = await pool.query('SELECT reaction FROM reactions WHERE bot_token = $1', [botToken]);
-      if (res.rows.length > 0) {
-        const reactions = res.rows.map(row => row.reaction);
+      const reactions = getReactions(botToken);
+      if (reactions.length > 0) {
         const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
         await ctx.react(randomReaction);
       }
@@ -22,8 +21,8 @@ async function startBot(botToken) {
 }
 
 async function loadBots() {
-  const bots = await pool.query('SELECT bot_token FROM bots');
-  bots.rows.forEach(row => startBot(row.bot_token));
+  const bots = getBots();
+  bots.forEach(startBot);
 }
 
 module.exports = { startBot, loadBots };
